@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { BriefcaseBusiness, Menu, X, ChevronDown, Bell, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown, Bell, LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { Button, Container } from "../ui";
 import { authApi } from "../../services/api";
 import { logout } from "../../redux/authSlice";
+import logoImg from "../../assets/images/logo.png";
 import "./Navbar.css";
 
 const mainLinks = [
@@ -68,15 +69,12 @@ const Navbar = () => {
     >
       <Container className="flex h-20 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="CareerNest home">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-900/20">
-            <BriefcaseBusiness size={20} />
-          </span>
-          <span className="hidden sm:block">
-            <span className="block text-lg font-extrabold tracking-tight text-slate-950 dark:text-white">
-              Career<span className="text-teal-600">Nest</span>
-            </span>
-          </span>
+        <Link to="/" className="flex shrink-0 items-center" aria-label="CareerNest home">
+          <img 
+            src={logoImg} 
+            alt="CareerNest Logo" 
+            className="h-9 sm:h-10 w-auto object-contain transition-transform duration-200 hover:scale-105" 
+          />
         </Link>
 
         {/* Main Navigation */}

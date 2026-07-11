@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BriefcaseBusiness, Globe2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { Globe2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { Button, Container } from "../../components/ui";
 import { authApi, otpApi } from "../../services/api";
 import { loginSuccess } from "../../redux/authSlice";
+import logoImg from "../../assets/images/logo.png";
+import logoIcon from "../../assets/images/logo_icon.png";
 
 import "./Login.css";
 const Login = () => {
@@ -101,8 +103,8 @@ const Login = () => {
   };
 
   return (
-    <section className="section-pad">
-      <Container className="grid items-center gap-10 lg:grid-cols-2">
+    <section className="py-10 md:py-14">
+      <Container className="max-w-[900px] grid items-center gap-x-8 gap-y-6 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
             Welcome back
@@ -110,15 +112,17 @@ const Login = () => {
           <h1 className="mt-4 text-4xl font-extrabold text-slate-950 dark:text-white sm:text-6xl">
             Sign in to manage your career moves.
           </h1>
-          <div className="mt-8 rounded-3xl bg-white p-6 shadow-xl dark:bg-white/10">
+          <div className="mt-5 rounded-3xl bg-white p-6 shadow-xl dark:bg-white/10">
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
               className="flex items-center gap-4"
             >
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-700 text-white">
-                <BriefcaseBusiness size={30} />
-              </span>
+              <img 
+                src={logoIcon} 
+                alt="CareerNest Icon" 
+                className="h-16 w-16 object-contain" 
+              />
               <div>
                 <p className="font-bold text-slate-950 dark:text-white">CareerNest secure access</p>
                 <p className="text-sm text-slate-600 dark:text-slate-300">Applications, dashboards, resumes, and notifications in one account.</p>
@@ -127,54 +131,111 @@ const Login = () => {
           </div>
         </motion.div>
 
-        <form onSubmit={mode === "password" ? handlePasswordLogin : handleOtpLogin} className="glass rounded-3xl p-6 sm:p-8">
+        <form
+          onSubmit={
+            mode === "password"
+              ? handlePasswordLogin
+              : otpSent
+              ? handleOtpLogin
+              : (e) => {
+                  e.preventDefault();
+                  sendLoginOtp();
+                }
+          }
+          className="glass rounded-3xl p-6 sm:p-8"
+        >
+          <div className="mb-6 flex flex-col items-center">
+            <img 
+              src={logoImg} 
+              alt="CareerNest Logo" 
+              className="h-10 w-auto object-contain" 
+            />
+          </div>
+
           <div className="mb-6 grid grid-cols-2 gap-2 rounded-2xl bg-white p-1 dark:bg-white/10">
-            <button type="button" onClick={() => setMode("password")} className={`rounded-xl px-4 py-3 text-sm font-semibold ${mode === "password" ? "bg-teal-700 text-white" : "text-slate-700 dark:text-slate-200"}`}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("password");
+                setOtpSent(false);
+                setFormData((prev) => ({ ...prev, otp: "" }));
+              }}
+              className={`rounded-xl px-4 py-3 text-sm font-semibold ${
+                mode === "password"
+                  ? "bg-teal-700 text-white"
+                  : "text-slate-700 dark:text-slate-200"
+              }`}
+            >
               Password
             </button>
-            <button type="button" onClick={() => setMode("otp")} className={`rounded-xl px-4 py-3 text-sm font-semibold ${mode === "otp" ? "bg-teal-700 text-white" : "text-slate-700 dark:text-slate-200"}`}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("otp");
+                setOtpSent(false);
+                setFormData((prev) => ({ ...prev, otp: "" }));
+              }}
+              className={`rounded-xl px-4 py-3 text-sm font-semibold ${
+                mode === "otp"
+                  ? "bg-teal-700 text-white"
+                  : "text-slate-700 dark:text-slate-200"
+              }`}
+            >
               OTP Login
             </button>
           </div>
 
           <label className="block">
             <span className="text-sm font-semibold">Email</span>
-            <span className="mt-2 flex min-h-12 items-center gap-3 rounded-xl bg-white px-4 dark:bg-white/10">
+            <span className="mt-1.5 flex min-h-11 items-center gap-3 rounded-xl bg-white px-4 dark:bg-white/10">
               <Mail size={18} className="text-teal-700" />
               <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-transparent text-sm outline-none" placeholder="you@example.com" required />
             </span>
           </label>
 
-          {mode === "password" ? (
-            <label className="mt-5 block">
+          {mode === "password" && (
+            <label className="mt-4 block">
               <span className="text-sm font-semibold">Password</span>
-              <span className="mt-2 flex min-h-12 items-center gap-3 rounded-xl bg-white px-4 dark:bg-white/10">
+              <span className="mt-1.5 flex min-h-11 items-center gap-3 rounded-xl bg-white px-4 dark:bg-white/10">
                 <LockKeyhole size={18} className="text-teal-700" />
                 <input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full bg-transparent text-sm outline-none" placeholder="Password" required />
               </span>
             </label>
-          ) : (
-            <label className="mt-5 block">
+          )}
+
+          {mode === "otp" && otpSent && (
+            <label className="mt-4 block">
               <span className="text-sm font-semibold">OTP</span>
-              <span className="mt-2 flex min-h-12 items-center gap-3 rounded-xl bg-white px-4 dark:bg-white/10">
+              <span className="mt-1.5 flex min-h-11 items-center gap-3 rounded-xl bg-white px-4 dark:bg-white/10">
                 <ShieldCheck size={18} className="text-teal-700" />
-                <input name="otp" value={formData.otp} onChange={handleChange} className="w-full bg-transparent text-sm outline-none" placeholder="6-digit OTP" required />
+                <input
+                  type="text"
+                  name="otp"
+                  value={formData.otp}
+                  onChange={handleChange}
+                  className="w-full bg-transparent text-sm outline-none"
+                  placeholder="6-digit OTP"
+                  required
+                  autoComplete="one-time-code"
+                />
               </span>
             </label>
           )}
 
-          <div className="mt-5 flex items-center justify-between text-sm">
+          <div className="mt-4 flex items-center justify-between text-sm">
             <label className="flex items-center gap-2">
               <input name="remember" type="checkbox" checked={formData.remember} onChange={handleChange} />
               Remember me
             </label>
-            <Link to="/forgot-password" className="font-semibold text-teal-700 dark:text-teal-300">Forgot password?</Link>
+            {mode === "password" && (
+              <Link to="/forgot-password" className="font-semibold text-teal-700 dark:text-teal-300">Forgot password?</Link>
+            )}
           </div>
 
           {mode === "otp" && !otpSent ? (
-            <Button type="button" onClick={sendLoginOtp} className="mt-6 w-full">{loading ? "Sending..." : "Send OTP"}</Button>
+            <Button type="submit" className="mt-5 w-full">{loading ? "Sending..." : "Send OTP"}</Button>
           ) : (
-            <Button type="submit" className="mt-6 w-full">{loading ? "Please wait..." : mode === "password" ? "Login" : "Verify OTP & Login"}</Button>
+            <Button type="submit" className="mt-5 w-full">{loading ? "Please wait..." : mode === "password" ? "Login" : "Verify OTP & Login"}</Button>
           )}
 
           {mode === "otp" && otpSent ? (
@@ -190,7 +251,7 @@ const Login = () => {
             </Button>
           </div>
 
-          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-300">
+          <p className="mt-5 text-center text-sm text-slate-600 dark:text-slate-300">
             New to CareerNest?
             <Link className="ml-2 font-bold text-teal-700 dark:text-teal-300" to="/register">Create account</Link>
           </p>

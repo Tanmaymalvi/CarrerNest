@@ -12,6 +12,8 @@ import {
   Brain,
   Award,
   Eye,
+  Filter,
+  Search,
 } from "lucide-react";
 
 import { Container, Button } from "../../components/ui";
@@ -233,6 +235,10 @@ const Services = () => {
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [showFilters, setShowFilters] = useState(false);
+
   useEffect(() => {
     const loadServices = async () => {
       try {
@@ -249,6 +255,26 @@ const Services = () => {
   }, []);
 
   const visibleServices = (apiServices.length ? apiServices : services).map(normalizeService);
+
+  const filteredServices = visibleServices.filter((service) => {
+    const title = service.title.toLowerCase();
+    const desc = service.description.toLowerCase();
+    const text = `${title} ${desc}`;
+    
+    if (searchTerm && !text.includes(searchTerm.toLowerCase())) return false;
+    
+    if (selectedCategory !== "All") {
+      const isResume = title.includes("resume");
+      const isMock = title.includes("mock") || title.includes("interview");
+      const isBooster = title.includes("priority") || title.includes("recruiter") || title.includes("display");
+      
+      if (selectedCategory === "Resume Services" && !isResume) return false;
+      if (selectedCategory === "Mock Interviews" && !isMock) return false;
+      if (selectedCategory === "Career Boosters" && !isBooster) return false;
+    }
+    
+    return true;
+  });
 
   const handleBuy = async (service) => {
     const routeId = isMongoId(service.id) ? service.id : slugify(service.title);
@@ -280,24 +306,110 @@ const Services = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen">
       
       {/* Hero */}
-      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 px-4 py-24">
+      <div className="relative overflow-hidden py-16 sm:py-20 border-b border-slate-100 dark:border-white/5">
+        <motion.div 
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 15, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-0 left-1/4 -z-10 h-72 w-72 rounded-full bg-teal-400/10 blur-3xl dark:bg-teal-500/5" 
+        />
+        <motion.div 
+          animate={{
+            y: [0, 20, 0],
+            x: [0, -15, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-0 right-1/4 -z-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl dark:bg-cyan-500/5" 
+        />
+        
         <Container>
           <motion.div
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1 className="mb-4 text-5xl font-bold text-white">
-              Premium Career Services
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 dark:bg-teal-950/40 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-900/30">
+              🚀 Boost Your Career
+            </span>
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white md:text-5xl">
+              Premium <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent dark:from-teal-400 dark:to-cyan-400">Career Services</span>
             </h1>
 
-            <p className="mx-auto max-w-2xl text-lg text-cyan-100">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600 dark:text-slate-300">
               Accelerate your career growth with AI tools,
               expert guidance and recruiter support.
             </p>
+
+            {/* Search and Filters Bar */}
+            <div className="glass mx-auto mt-8 max-w-2xl rounded-3xl p-4 shadow-xl border border-slate-200 dark:border-white/5 bg-white dark:bg-white/10">
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                <label className="flex min-h-12 items-center gap-3 rounded-2xl bg-white px-4 dark:bg-white/10">
+                  <Search size={18} className="text-teal-700 dark:text-teal-400" />
+                  <input
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    className="w-full bg-transparent text-sm outline-none"
+                    placeholder="Search services..."
+                  />
+                </label>
+                <Button 
+                  variant="secondary"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={showFilters ? "bg-teal-700 text-white hover:bg-teal-800" : ""}
+                >
+                  <Filter size={17} /> Filters
+                </Button>
+              </div>
+
+              {/* Collapsible Category Selector */}
+              {showFilters && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mt-4 border-t border-slate-200 dark:border-white/10 pt-4"
+                >
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-500">Service Category</span>
+                    <button 
+                      onClick={() => setSelectedCategory("All")} 
+                      className="font-bold text-teal-700 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
+                    >
+                      Clear Category
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {["All", "Resume Services", "Mock Interviews", "Career Boosters"].map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                          selectedCategory === cat
+                            ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-md"
+                            : "border border-slate-200 bg-white text-slate-700 hover:border-teal-300 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </motion.div>
         </Container>
       </div>
@@ -310,7 +422,7 @@ const Services = () => {
           </div>
         ) : null}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {visibleServices.map((service, index) => (
+          {filteredServices.map((service, index) => (
             <ServiceCard
               key={service.id}
               service={service}

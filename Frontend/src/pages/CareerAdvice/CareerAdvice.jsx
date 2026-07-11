@@ -104,55 +104,104 @@ const CareerAdvice = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900">
-      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 px-4 py-16">
+    <div className="min-h-screen">
+      <div className="relative overflow-hidden py-16 sm:py-20 border-b border-slate-100 dark:border-white/5">
+        <motion.div 
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 15, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-0 left-1/4 -z-10 h-72 w-72 rounded-full bg-teal-400/10 blur-3xl dark:bg-teal-500/5" 
+        />
+        <motion.div 
+          animate={{
+            y: [0, 20, 0],
+            x: [0, -15, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-0 right-1/4 -z-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl dark:bg-cyan-500/5" 
+        />
+        
         <Container>
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Career Advice & Resources</h1>
-            <p className="mx-auto max-w-2xl text-lg text-cyan-100">Expert tips, strategies, and insights to advance your career.</p>
-            <div className="mx-auto mt-8 max-w-2xl">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Search articles..."
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  className="w-full rounded-xl border-0 bg-white px-12 py-4 text-slate-900 placeholder-slate-500 shadow-lg outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 dark:bg-teal-950/40 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-900/30">
+              💡 Learning & Growth
+            </span>
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white md:text-5xl">
+              Career Advice & <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent dark:from-teal-400 dark:to-cyan-400">Resources</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600 dark:text-slate-300">Expert tips, strategies, and insights to advance your career.</p>
+            <div className="mx-auto mt-8 max-w-2xl px-4">
+              <div className="glass grid gap-3 sm:grid-cols-[1fr_auto] rounded-2xl bg-white border border-slate-200 dark:bg-white/10 dark:border-white/5 p-2 shadow-xl">
+                <div className="flex items-center gap-3 px-2">
+                  <Search className="text-teal-700 dark:text-teal-400" size={20} />
+                  <input 
+                    value={searchTerm} 
+                    onChange={(event) => setSearchTerm(event.target.value)} 
+                    type="text" 
+                    placeholder="Search articles..." 
+                    className="w-full bg-transparent border-0 py-2 text-slate-900 dark:text-white placeholder-slate-400 outline-none" 
+                  />
+                </div>
+                <Button 
+                  variant="secondary"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={showFilters ? "bg-teal-700 text-white hover:bg-teal-800" : ""}
+                >
+                  <Filter size={17} /> Filters
+                </Button>
               </div>
+
+              {/* Collapsible Category Filters */}
+              {showFilters && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mt-4 glass rounded-2xl p-4 bg-white dark:bg-white/10 border border-slate-200 dark:border-white/5"
+                >
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-500">Article Category</span>
+                    <button 
+                      onClick={() => setSelectedCategory("All")} 
+                      className="font-bold text-teal-700 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
+                    >
+                      Clear filter
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                          selectedCategory === category
+                            ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-md"
+                            : "border border-slate-200 bg-white text-slate-700 hover:border-teal-300 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300"
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </Container>
       </div>
 
       <Container className="py-12">
-        <div className="mb-8">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 font-medium text-slate-700 md:hidden dark:border-white/10 dark:bg-slate-900 dark:text-slate-300"
-          >
-            <Filter size={18} />
-            Filters
-          </button>
-
-          <div className={`grid gap-3 ${showFilters ? "" : "hidden md:grid"} grid-cols-2 md:grid-cols-5`}>
-            {categories.map((category) => (
-              <motion.button
-                key={category}
-                whileHover={{ scale: 1.05 }}
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-lg px-4 py-2 font-medium transition-all ${
-                  selectedCategory === category
-                    ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg"
-                    : "border border-slate-200 bg-white text-slate-700 hover:border-teal-300 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-teal-500/50"
-                }`}
-              >
-                {category}
-              </motion.button>
-            ))}
-          </div>
-        </div>
 
         <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
           Showing <span className="font-semibold text-slate-900 dark:text-white">{filteredArticles.length}</span> articles

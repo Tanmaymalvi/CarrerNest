@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { Button, Container } from "../../components/ui";
 import { authApi, otpApi } from "../../services/api";
 import { loginSuccess } from "../../redux/authSlice";
+import logoImg from "../../assets/images/logo.png";
 
 import "./Register.css";
 const Register = () => {
@@ -90,9 +91,14 @@ const Register = () => {
   };
 
   return (
-    <section className="section-pad">
-      <Container className="max-w-4xl">
-        <div className="mb-8 text-center">
+    <section className="py-10 md:py-14">
+      <Container className="max-w-[900px]">
+        <div className="mb-5 flex flex-col items-center text-center">
+          <img 
+            src={logoImg} 
+            alt="CareerNest Logo" 
+            className="mb-4 h-12 w-auto object-contain" 
+          />
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
             Create account
           </p>
@@ -105,7 +111,7 @@ const Register = () => {
         {!otpSent ? (
           <form
             onSubmit={handleRegister}
-            className="glass grid gap-5 rounded-3xl p-6 sm:grid-cols-2 sm:p-8"
+            className="glass grid gap-4 rounded-3xl p-6 sm:grid-cols-2 sm:p-8"
           >
           {/* Full Name */}
 
@@ -119,7 +125,7 @@ const Register = () => {
               name="fullname"
               value={formData.fullname}
               onChange={handleChange}
-              className="mt-2 min-h-12 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
+              className="mt-1.5 min-h-11 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
               placeholder="Full Name"
               required
             />
@@ -137,7 +143,7 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-2 min-h-12 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
+              className="mt-1.5 min-h-11 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
               placeholder="Email"
               required
             />
@@ -155,7 +161,7 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="mt-2 min-h-12 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
+              className="mt-1.5 min-h-11 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
               placeholder="Password"
               required
             />
@@ -173,7 +179,7 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="mt-2 min-h-12 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
+              className="mt-1.5 min-h-11 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10"
               placeholder="Confirm Password"
               required
             />
@@ -186,11 +192,11 @@ const Register = () => {
               I am registering as
             </span>
 
-            <div className="mt-2 grid gap-3 sm:grid-cols-3">
-              {["student", "employer", "admin"].map((role) => (
+            <div className="mt-1.5 grid gap-3 sm:grid-cols-2">
+              {["student", "employer"].map((role) => (
                 <label
                   key={role}
-                  className="flex min-h-12 items-center gap-3 rounded-xl bg-white px-4 text-sm font-semibold dark:bg-white/10"
+                  className="flex min-h-11 items-center gap-3 rounded-xl bg-white px-4 text-sm font-semibold dark:bg-white/10"
                 >
                   <input
                     type="radio"
@@ -200,7 +206,7 @@ const Register = () => {
                     onChange={handleChange}
                   />
 
-                  {role === "student" ? "Student" : role === "employer" ? "Employer" : "Admin"}
+                  {role === "student" ? "Student" : "Employer"}
                 </label>
               ))}
             </div>
@@ -224,25 +230,27 @@ const Register = () => {
               : "Send OTP"}
           </Button>
 
-          <Button
-            type="button"
-            variant="secondary"
-            className="sm:col-span-2"
-            onClick={handleGoogleLogin}
-          >
-            <Globe2 size={17} />
-            Continue with Google
-          </Button>
+          <div className="grid gap-3 sm:grid-cols-2 sm:col-span-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full"
+              onClick={handleGoogleLogin}
+            >
+              <Globe2 size={17} />
+              Continue with Google
+            </Button>
 
-          <Button
-            type="button"
-            variant="secondary"
-            className="sm:col-span-2"
-            onClick={() => toast("LinkedIn sign up UI is ready; OAuth credentials are not configured yet.")}
-          >
-            <span className="font-bold">in</span>
-            Continue with LinkedIn
-          </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full"
+              onClick={() => toast("LinkedIn sign up UI is ready; OAuth credentials are not configured yet.")}
+            >
+              <span className="font-bold">in</span>
+              Continue with LinkedIn
+            </Button>
+          </div>
 
           <p className="text-center text-sm text-slate-600 sm:col-span-2 dark:text-slate-300">
             Already have an account?
@@ -256,14 +264,14 @@ const Register = () => {
           </p>
           </form>
         ) : (
-          <form onSubmit={handleVerifyAndCreate} className="glass mx-auto grid max-w-xl gap-5 rounded-3xl p-6 sm:p-8">
+          <form onSubmit={handleVerifyAndCreate} className="glass mx-auto grid max-w-xl gap-4 rounded-3xl p-6 sm:p-8">
             <div>
               <h2 className="text-2xl font-bold text-slate-950 dark:text-white">Verify your email</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Enter the 6-digit OTP sent to {formData.email}.</p>
             </div>
             <label>
               <span className="text-sm font-semibold">OTP</span>
-              <input value={otp} onChange={(event) => setOtp(event.target.value)} maxLength={6} required className="mt-2 min-h-12 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10" />
+              <input value={otp} onChange={(event) => setOtp(event.target.value)} maxLength={6} required className="mt-1.5 min-h-11 w-full rounded-xl bg-white px-4 text-sm outline-none dark:bg-white/10" />
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
               <Button type="submit">{loading ? "Verifying..." : "Verify & Create Account"}</Button>
